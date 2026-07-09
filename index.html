@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>幸福沙龙标准训练工具 Demo</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --soft: #f8faf6;
+      --line: #dfe5dc;
+      --line-strong: #c3cec0;
+      --text: #233026;
+      --muted: #667267;
+      --green: #237a55;
+      --green-soft: #dceee5;
+      --blue: #315f8d;
+      --blue-soft: #e2edf7;
+      --amber: #9a641f;
+      --amber-soft: #f5ead9;
+      --red: #a2463e;
+      --red-soft: #f3dfdd;
+      --violet: #6b5790;
+      --violet-soft: #ece6f4;
+      --shadow: 0 10px 28px rgba(35, 50, 38, 0.08);
+      --shadow-soft: 0 6px 18px rgba(35, 50, 38, 0.06);
+      --radius: 8px;
+      --mobile-nav-height: 76px;
+      --font: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      background: #213529;
+      color: #eef6ef;
+      padding: 20px 16px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: grid;
+      gap: 4px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-subtitle {
+      color: #b9c9bb;
+      font-size: 12px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+      margin-top: 18px;
+    }
+
+    .nav button {
+      min-height: 40px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: #dfece2;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 9px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 13px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-card {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar-card h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .sidebar-card p {
+      margin: 0;
+      color: #c5d2c7;
+      font-size: 12px;
+    }
+
+    .content {
+      min-width: 0;
+      padding: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      display: grid;
+      gap: 3px;
+    }
+
+    .page-title h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 36px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--text);
+      padding: 7px 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(35, 122, 85, 0.18);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfa;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .card-body {
+      padding: 12px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.86fr) minmax(380px, 1.14fr);
+      gap: 10px;
+    }
+
+    .wide-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 10px;
+    }
+
+    .focus-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr) auto;
+      gap: 10px;
+      align-items: stretch;
+      margin-bottom: 10px;
+    }
+
+    .focus-main,
+    .focus-facts,
+    .metric-strip,
+    .pulse-list {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .focus-main {
+      border-left: 4px solid var(--green);
+      padding: 12px 14px;
+      display: grid;
+      align-content: center;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .focus-main h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .focus-main p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .focus-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: hidden;
+    }
+
+    .focus-fact {
+      padding: 10px 12px;
+      display: grid;
+      align-content: center;
+      gap: 2px;
+      border-right: 1px solid var(--line);
+    }
+
+    .focus-fact:last-child {
+      border-right: 0;
+    }
+
+    .focus-fact b {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .focus-fact span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .metric-tile {
+      min-width: 0;
+      padding: 10px 12px;
+      border-right: 1px solid var(--line);
+      display: grid;
+      gap: 4px;
+    }
+
+    .metric-tile:last-child {
+      border-right: 0;
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metric-number {
+      font-size: 24px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .metric-note {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .dot.green { background: var(--green); }
+    .dot.amber { background: var(--amber); }
+    .dot.red { background: var(--red); }
+    .dot.violet { background: var(--violet); }
+
+    .chip {
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chip.green {
+      background: var(--green-soft);
+      border-color: #bcdcc9;
+      color: var(--green);
+    }
+
+    .chip.blue {
+      background: var(--blue-soft);
+      border-color: #c6dbef;
+      color: var(--blue);
+    }
+
+    .chip.amber {
+      background: var(--amber-soft);
+      border-color: #e4d0b2;
+      color: var(--amber);
+    }
+
+    .chip.red {
+      background: var(--red-soft);
+      border-color: #e1c2bf;
+      color: var(--red);
+    }
+
+    .chip.violet {
+      background: var(--violet-soft);
+      border-color: #d8cde6;
+      color: var(--violet);
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row-card,
+    .session,
+    .standard-card,
+    .example-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--soft);
+      padding: 10px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .session {
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+
+    .session:hover {
+      transform: translateY(-1px);
+    }
+
+    .session.active {
+      border-color: var(--green);
+      background: #f3f9f5;
+      box-shadow: 0 0 0 2px rgba(35, 122, 85, 0.08);
+    }
+
+    .row-top,
+    .session-top,
+    .standard-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5ebe2;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .stage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stage-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .stage-title {
+      padding: 9px 10px;
+      background: #fbfcfa;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .stage-title h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 7px;
+      padding: 10px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--soft);
+      padding: 7px 9px;
+    }
+
+    .check-mark {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 1px solid #9eb9a7;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      background: #f8fbf9;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    th {
+      background: var(--soft);
+      color: #475347;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #4f5b50;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--text);
+      padding: 9px 10px;
+      min-height: 40px;
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .standards-grid,
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .review-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+      margin-bottom: 10px;
+    }
+
+    .review-stat {
+      min-width: 0;
+      padding: 9px 10px;
+      border-right: 1px solid var(--line);
+      display: grid;
+      gap: 3px;
+    }
+
+    .review-stat:last-child {
+      border-right: 0;
+    }
+
+    .review-stat span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .review-stat strong {
+      font-size: 20px;
+      line-height: 1.1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .review-table table {
+      min-width: 760px;
+    }
+
+    .review-table th,
+    .review-table td {
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+
+    .review-table td:nth-child(2) {
+      min-width: 240px;
+    }
+
+    @media (min-width: 761px) {
+      #review.active {
+        min-height: calc(100vh - 100px);
+      }
+
+      #review.active .card {
+        min-height: calc(100vh - 100px);
+        display: flex;
+        flex-direction: column;
+      }
+
+      #review.active .card-body {
+        flex: 1;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+      }
+
+      #review.active .review-table table {
+        height: 100%;
+      }
+    }
+
+    .review-reflection {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .reflection-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--soft);
+      padding: 9px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .reflection-box h3 {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .standard-card {
+      min-height: 188px;
+      align-content: start;
+      background: var(--panel);
+    }
+
+    .standard-card h3,
+    .example-card h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .standard-card p,
+    .example-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pulse-list {
+      display: grid;
+      overflow: hidden;
+    }
+
+    .pulse-row {
+      display: grid;
+      grid-template-columns: 8px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pulse-row:last-child {
+      border-bottom: 0;
+    }
+
+    .pulse-row strong {
+      font-size: 13px;
+    }
+
+    .pulse-row span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .notice {
+      border-left: 4px solid var(--green);
+      background: #f2f8f4;
+      padding: 10px 12px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: #405044;
+      font-size: 13px;
+    }
+
+    .toast,
+    .mobile-tabbar {
+      display: none;
+    }
+
+    @media (max-width: 1120px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 16px 18px;
+      }
+
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .focus-panel,
+      .wide-split,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .stage-grid,
+      .standards-grid,
+      .examples-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        background: #f7f8f4;
+      }
+
+      .app {
+        min-height: 100svh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        padding: 12px 14px;
+      }
+
+      .brand {
+        padding-bottom: 0;
+        border-bottom: 0;
+        grid-template-columns: auto 1fr;
+        align-items: end;
+        column-gap: 10px;
+      }
+
+      .brand-title {
+        font-size: 18px;
+      }
+
+      .brand-subtitle {
+        font-size: 11px;
+      }
+
+      .nav,
+      .sidebar-card {
+        display: none;
+      }
+
+      .content {
+        padding: 14px 12px calc(var(--mobile-nav-height) + 18px);
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .page-title h1 {
+        font-size: 22px;
+      }
+
+      .page-title p {
+        font-size: 12px;
+      }
+
+      .toolbar {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .toolbar .btn {
+        min-height: 38px;
+        padding-inline: 6px;
+      }
+
+      .focus-panel {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .focus-main {
+        padding: 11px 12px;
+      }
+
+      .focus-main h2 {
+        font-size: 16px;
+      }
+
+      .focus-facts {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .focus-fact {
+        padding: 8px 9px;
+      }
+
+      .metric-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric-tile {
+        min-height: 74px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric-tile:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .metric-tile:nth-last-child(-n + 2) {
+        border-bottom: 0;
+      }
+
+      .stage-grid,
+      .standards-grid,
+      .examples-grid,
+      .form-grid,
+      .review-summary,
+      .review-reflection {
+        grid-template-columns: 1fr;
+      }
+
+      .review-stat {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .review-stat:last-child {
+        border-bottom: 0;
+      }
+
+      .card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .table-wrap {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table {
+        min-width: 650px;
+      }
+
+      .check-row {
+        grid-template-columns: 24px minmax(0, 1fr);
+      }
+
+      .check-row .chip {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .toast {
+        left: 12px;
+        right: 12px;
+        bottom: calc(var(--mobile-nav-height) + 12px);
+        text-align: center;
+      }
+
+      .mobile-tabbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 2px;
+        padding: 7px 6px calc(7px + env(safe-area-inset-bottom));
+        min-height: var(--mobile-nav-height);
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -10px 24px rgba(35, 50, 38, 0.12);
+        backdrop-filter: blur(12px);
+      }
+
+      .mobile-tabbar button {
+        min-width: 0;
+        min-height: 56px;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        background: transparent;
+        color: #5f6d61;
+        display: grid;
+        place-items: center;
+        gap: 2px;
+        padding: 5px 2px;
+        cursor: pointer;
+      }
+
+      .mobile-tabbar button.active {
+        background: var(--green-soft);
+        border-color: #c7dfcf;
+        color: var(--green);
+      }
+
+      .mobile-tabbar .mobile-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 800;
+        background: #eef3ea;
+        color: inherit;
+      }
+
+      .mobile-tabbar button.active .mobile-icon {
+        background: var(--green);
+        color: #ffffff;
+      }
+
+      .mobile-tabbar .mobile-label {
+        max-width: 100%;
+        font-size: 10px;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .brand {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .mobile-tabbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        min-height: 120px;
+      }
+
+      .content {
+        padding-bottom: 138px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-title">幸福沙龙</div>
+        <div class="brand-subtitle">15步标准执行与复盘训练 Demo</div>
+      </div>
+      <nav class="nav" aria-label="工作台导航">
+        <button class="active" data-tab="overview"><span class="nav-icon">总</span><span>总览</span></button>
+        <button data-tab="precheck"><span class="nav-icon">通</span><span>开前通关</span></button>
+        <button data-tab="sessions"><span class="nav-icon">场</span><span>沙龙场次</span></button>
+        <button data-tab="execute"><span class="nav-icon">执</span><span>15步执行</span></button>
+        <button data-tab="review"><span class="nav-icon">复</span><span>标准复盘</span></button>
+        <button data-tab="examples"><span class="nav-icon">榜</span><span>榜样沉淀</span></button>
+      </nav>
+      <div class="sidebar-card">
+        <h2>核心目标</h2>
+        <p>开前熟悉标准，开中照标准做，开后按标准复盘；对的方法重复做。</p>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div class="page-title">
+          <h1 id="pageTitle">总览</h1>
+          <p id="pageSubtitle">看见今日沙龙、开前通关、标准执行度和下一场训练重点。</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" type="button">本周</button>
+          <button class="btn" type="button">导出</button>
+          <button class="btn primary" type="button">新建沙龙</button>
+        </div>
+      </div>
+
+      <section id="overview" class="section active">
+        <div class="focus-panel">
+          <div class="focus-main">
+            <span class="eyebrow">今日重点</span>
+            <h2>今晚 19:30 语气沙龙，开前需完成演练通关</h2>
+            <p>本场为新主题，执行人需演练激活、破顾虑、采访讨论、结论、布置作业。</p>
+          </div>
+          <div class="focus-facts" aria-label="今日关键状态">
+            <div class="focus-fact">
+              <b>15/15</b>
+              <span>流程已熟悉</span>
+            </div>
+            <div class="focus-fact">
+              <b>7/9</b>
+              <span>关键标准</span>
+            </div>
+            <div class="focus-fact">
+              <b>采访讨论</b>
+              <span>本场训练点</span>
+            </div>
+          </div>
+          <button class="btn primary" type="button">去通关</button>
+        </div>
+
+        <div class="metric-strip" aria-label="沙龙训练数据">
+          <article class="metric-tile">
+            <div class="metric-top"><span>本周沙龙</span><i class="dot green"></i></div>
+            <div class="metric-number">6</div>
+            <div class="metric-note">重复做标准流程</div>
+          </article>
+          <article class="metric-tile">
+            <div class="metric-top"><span>开前通关</span><i class="dot amber"></i></div>
+            <div class="metric-number">83%</div>
+            <div class="metric-note">1场需补演练</div>
+          </article>
+          <article class="metric-tile">
+            <div class="metric-top"><span>15步完成</span><i class="dot green"></i></div>
+            <div class="metric-number">92%</div>
+            <div class="metric-note">流程不跑偏</div>
+          </article>
+          <article class="metric-tile">
+            <div class="metric-top"><span>标准做到位</span><i class="dot blue"></i></div>
+            <div class="metric-number">78%</div>
+            <div class="metric-note">9个关键步骤</div>
+          </article>
+          <article class="metric-tile">
+            <div class="metric-top"><span>最弱步骤</span><i class="dot amber"></i></div>
+            <div class="metric-number">采访</div>
+            <div class="metric-note">容易讲道理</div>
+          </article>
+          <article class="metric-tile">
+            <div class="metric-top"><span>榜样候选</span><i class="dot green"></i></div>
+            <div class="metric-number">3</div>
+            <div class="metric-note">待采访确认</div>
+          </article>
+        </div>
+
+        <div class="wide-split">
+          <div class="card">
+            <div class="card-header">
+              <h2>本周训练动作</h2>
+              <span class="chip green">先辅导训练</span>
+            </div>
+            <div class="card-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>时间</th>
+                      <th>动作</th>
+                      <th>标准关注</th>
+                      <th>状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>今天 16:00</td>
+                      <td>完成语气沙龙开前演练通关</td>
+                      <td>激活、破顾虑、采访讨论</td>
+                      <td><span class="chip amber">待完成</span></td>
+                    </tr>
+                    <tr>
+                      <td>今晚 21:00</td>
+                      <td>按15步做结束后标准复盘</td>
+                      <td>是否按标准句做到位</td>
+                      <td><span class="chip blue">待复盘</span></td>
+                    </tr>
+                    <tr>
+                      <td>明天 12:00</td>
+                      <td>收回作业反馈并记录榜样候选</td>
+                      <td>发出要求后必须收回</td>
+                      <td><span class="chip amber">待跟进</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <aside class="card">
+            <div class="card-header">
+              <h2>执行人成长</h2>
+              <span class="chip blue">轻量记录</span>
+            </div>
+            <div class="card-body">
+              <div class="pulse-list">
+                <div class="pulse-row"><i class="dot green"></i><strong>连续执行</strong><span>4场</span></div>
+                <div class="pulse-row"><i class="dot amber"></i><strong>最弱动作</strong><span>采访讨论</span></div>
+                <div class="pulse-row"><i class="dot blue"></i><strong>下场重点</strong><span>少讲多问</span></div>
+                <div class="pulse-row"><i class="dot violet"></i><strong>辅导方向</strong><span>按标准复盘</span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="precheck" class="section">
+        <div class="wide-split">
+          <div class="card">
+            <div class="card-header">
+              <h2>开前通关自查</h2>
+              <span class="chip amber">开场前必须完成</span>
+            </div>
+            <div class="card-body">
+              <div class="checklist" id="precheckList"></div>
+            </div>
+          </div>
+          <aside class="card">
+            <div class="card-header">
+              <h2>演练触发条件</h2>
+            </div>
+            <div class="card-body grid">
+              <div class="notice">普通场次做自查；新手、新主题、连续复盘不达标，必须演练关键步骤后再开。</div>
+              <div class="pulse-list">
+                <div class="pulse-row"><i class="dot amber"></i><strong>新手执行</strong><span>必须演练</span></div>
+                <div class="pulse-row"><i class="dot amber"></i><strong>新主题</strong><span>必须演练</span></div>
+                <div class="pulse-row"><i class="dot red"></i><strong>连续不达标</strong><span>必须演练</span></div>
+                <div class="pulse-row"><i class="dot green"></i><strong>稳定通关</strong><span>自查即可</span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="sessions" class="section">
+        <div class="split">
+          <div class="card">
+            <div class="card-header">
+              <h2>沙龙场次</h2>
+              <span class="chip green">围绕标准流程</span>
+            </div>
+            <div class="card-body">
+              <div class="list" id="sessionList"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2 id="sessionDetailTitle">语气沙龙：如何把丢失的幸福找回来</h2>
+              <span class="chip blue" id="sessionOwner">执行人：李老师</span>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="field">
+                  <label>沙龙主题</label>
+                  <input value="语气沙龙：如何把丢失的幸福找回来">
+                </div>
+                <div class="field">
+                  <label>互动游戏</label>
+                  <input value="语气对比互动游戏">
+                </div>
+                <div class="field">
+                  <label>执行人</label>
+                  <input id="detailOwnerInput" value="李老师">
+                </div>
+                <div class="field">
+                  <label>开前通关状态</label>
+                  <select>
+                    <option>需演练通关</option>
+                    <option>已自查通关</option>
+                    <option>已演练通关</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label>本场训练重点</label>
+                  <textarea>采访讨论少讲道理，多用对比发问，让参与者自己看见问题。</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="execute" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h2>15步执行检查</h2>
+            <span class="chip green">会前 · 会中 · 会后</span>
+          </div>
+          <div class="card-body">
+            <div class="stage-grid" id="flowStages"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h2>标准复盘</h2>
+            <span class="chip amber">快速判断 · 及时反思 · 下次重复训练</span>
+          </div>
+          <div class="card-body">
+            <div class="review-summary">
+              <div class="review-stat">
+                <span>15步完成</span>
+                <strong>14/15</strong>
+              </div>
+              <div class="review-stat">
+                <span>关键步骤符合</span>
+                <strong>7/9</strong>
+              </div>
+              <div class="review-stat">
+                <span>最弱步骤</span>
+                <strong>采访讨论</strong>
+              </div>
+              <div class="review-stat">
+                <span>下次训练</span>
+                <strong>少讲多问</strong>
+              </div>
+            </div>
+
+            <div class="table-wrap review-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>关键步骤</th>
+                    <th>标准句</th>
+                    <th>判断</th>
+                    <th>常见偏差</th>
+                    <th>下次动作</th>
+                  </tr>
+                </thead>
+                <tbody id="keyStandards"></tbody>
+              </table>
+            </div>
+
+            <div class="review-reflection">
+              <div class="reflection-box">
+                <h3>这次做对了什么</h3>
+                <p>发心开场更自然，结论比上一场更清楚。</p>
+              </div>
+              <div class="reflection-box">
+                <h3>哪里没有按标准</h3>
+                <p>采访讨论时讲得偏多，没有让参与者充分说出自己的发现。</p>
+              </div>
+              <div class="reflection-box">
+                <h3>下一场重复训练</h3>
+                <p>围绕采访讨论训练“少讲多问”，提前准备3个对比问题。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="examples" class="section">
+        <div class="wide-split">
+          <div class="card">
+            <div class="card-header">
+              <h2>榜样沉淀</h2>
+              <span class="chip green">重点客户才记录细节</span>
+            </div>
+            <div class="card-body">
+              <div class="examples-grid" id="examplesGrid"></div>
+            </div>
+          </div>
+          <aside class="card">
+            <div class="card-header">
+              <h2>本场整体反馈</h2>
+            </div>
+            <div class="card-body">
+              <div class="pulse-list">
+                <div class="pulse-row"><i class="dot green"></i><strong>到场</strong><span>9人</span></div>
+                <div class="pulse-row"><i class="dot blue"></i><strong>现场行动</strong><span>7人</span></div>
+                <div class="pulse-row"><i class="dot amber"></i><strong>作业待收</strong><span>5人</span></div>
+                <div class="pulse-row"><i class="dot green"></i><strong>榜样候选</strong><span>2人</span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-tabbar" aria-label="手机工作台导航">
+    <button class="active" data-tab="overview" type="button"><span class="mobile-icon">总</span><span class="mobile-label">总览</span></button>
+    <button data-tab="precheck" type="button"><span class="mobile-icon">通</span><span class="mobile-label">通关</span></button>
+    <button data-tab="sessions" type="button"><span class="mobile-icon">场</span><span class="mobile-label">场次</span></button>
+    <button data-tab="execute" type="button"><span class="mobile-icon">执</span><span class="mobile-label">执行</span></button>
+    <button data-tab="review" type="button"><span class="mobile-icon">复</span><span class="mobile-label">复盘</span></button>
+    <button data-tab="examples" type="button"><span class="mobile-icon">榜</span><span class="mobile-label">榜样</span></button>
+  </nav>
+
+  <script>
+    const pageMeta = {
+      overview: ["总览", "看见今日沙龙、开前通关、标准执行度和下一场训练重点。"],
+      precheck: ["开前通关", "开场前确认熟悉15步流程、主题、游戏、关键话术和作业设计。"],
+      sessions: ["沙龙场次", "每一场沙龙只围绕主题、游戏、执行人和训练重点管理。"],
+      execute: ["15步执行", "按会前、会中、会后检查流程是否完整执行。"],
+      review: ["标准复盘", "15步是否完成，9个关键步骤是否按标准做到位，下次怎么改。"],
+      examples: ["榜样沉淀", "普通客户记整体数据，重点客户和榜样候选记录变化。"]
+    };
+
+    const sessions = [
+      {
+        id: "20260709-001",
+        title: "语气沙龙：如何把丢失的幸福找回来",
+        owner: "李老师",
+        date: "7月9日 19:30",
+        pass: "需演练通关",
+        execution: 92,
+        weak: "采访讨论",
+        tags: ["新主题", "演练通关", "重点训练少讲多问"]
+      },
+      {
+        id: "20260708-003",
+        title: "角度沙龙：换个角度看问题",
+        owner: "陈老师",
+        date: "7月8日 14:00",
+        pass: "已自查通关",
+        execution: 86,
+        weak: "收作业",
+        tags: ["线下", "流程完整", "待收反馈"]
+      },
+      {
+        id: "20260707-002",
+        title: "亲子沟通沙龙：从指责到表达",
+        owner: "王老师",
+        date: "7月7日 19:30",
+        pass: "已演练通关",
+        execution: 95,
+        weak: "排队",
+        tags: ["新手执行", "总监陪跑", "复盘完成"]
+      }
+    ];
+
+    const precheckItems = [
+      ["15步流程", "能按会前、会中、会后完整说出15步", "已熟悉"],
+      ["主题与游戏", "主题、游戏、结论和作业保持一致", "已准备"],
+      ["激活话术", "能让对方对内容好奇并愿意来", "需演练"],
+      ["破顾虑话术", "让对方无压力参加，不产生推销感", "需演练"],
+      ["问题采集", "提前收集真实困惑和具体场景", "已完成"],
+      ["采访讨论", "准备对比问题，引导参与者自己看见问题", "需演练"],
+      ["结论呈现", "能把主题背后的规律讲清楚", "已准备"],
+      ["作业设计", "作业可行动、可反馈、可收回", "已准备"]
+    ];
+
+    const flowSteps = [
+      { stage: "会前", steps: ["激活", "破担心/顾虑", "排队", "提要求", "问题采集"] },
+      { stage: "会中", steps: ["发心开场", "自我介绍", "主题", "采访讨论", "结论", "行动改变", "拔高", "布置作业"] },
+      { stage: "会后", steps: ["收作业", "榜样采访"] }
+    ];
+
+    const keyStandards = [
+      ["激活", "是否让对方对内容产生好奇，愿意参与？", "只发通知，没有激发兴趣", "下次先用问题+案例激活"],
+      ["破顾虑", "是否让对方无压力参加，而不是被推销感吓退？", "解释过多，像在说服", "用短话术说明免费体验和不推销"],
+      ["排队", "是否建立预约和用心参与的态度？", "随到随听，参与心不够", "坚持预约制和名额感"],
+      ["提要求", "是否提前调整心态并筛选高质量参与者？", "只通知时间，没有提参与要求", "提前说清准时、安静、带问题"],
+      ["问题采集", "是否收集到真实困惑和具体场景？", "问题太泛，复盘无抓手", "追问具体人、具体事、具体感受"],
+      ["采访讨论", "是否通过对比发问引导知错，而不是讲道理？", "执行人讲得多，参与者说得少", "少讲多问，用对比问题引导"],
+      ["结论", "是否把主题背后的规律讲清楚？", "结论散，参与者带不走", "用一句规律总结主题"],
+      ["行动改变", "是否激发下一次学习和实际行动？", "停留在听懂，没有行动", "引导现场说出今晚要做什么"],
+      ["布置/收作业", "是否发出要求并收回反馈？", "有布置，没收回", "明确时间、格式、收回动作"]
+    ];
+
+    const exampleData = [
+      ["王姐", "孩子回应变柔和，愿意继续做作业", "可做榜样采访", "已授权内部记录", "green"],
+      ["陈姐", "第一次发现自己语气急，愿意今晚换表达", "重点跟进", "后续承接意向弱", "blue"],
+      ["刘老师", "主动问能不能学习开沙龙", "事业伙伴线索", "需总监进一步沟通", "violet"],
+      ["赵姐", "愿意带朋友参加下一场", "转介绍", "记录来源和问题", "amber"]
+    ];
+
+    const tabButtons = document.querySelectorAll("[data-tab]");
+    const sections = document.querySelectorAll(".section");
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const sessionList = document.getElementById("sessionList");
+    const sessionDetailTitle = document.getElementById("sessionDetailTitle");
+    const sessionOwner = document.getElementById("sessionOwner");
+    const detailOwnerInput = document.getElementById("detailOwnerInput");
+    const precheckList = document.getElementById("precheckList");
+    const flowStages = document.getElementById("flowStages");
+    const keyStandardsEl = document.getElementById("keyStandards");
+    const examplesGrid = document.getElementById("examplesGrid");
+
+    function switchTab(tab) {
+      tabButtons.forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
+      sections.forEach((section) => section.classList.toggle("active", section.id === tab));
+      pageTitle.textContent = pageMeta[tab][0];
+      pageSubtitle.textContent = pageMeta[tab][1];
+    }
+
+    function renderSessions() {
+      sessionList.innerHTML = sessions.map((session, index) => `
+        <button class="session ${index === 0 ? "active" : ""}" type="button" data-session="${index}">
+          <span class="session-top">
+            <span>
+              <span class="title">${session.title}</span>
+              <span class="muted">${session.id} · ${session.date}</span>
+            </span>
+            <span class="chip ${session.pass.includes("需") ? "amber" : "green"}">${session.pass}</span>
+          </span>
+          <span class="chips">${session.tags.map((tag) => `<span class="chip">${tag}</span>`).join("")}</span>
+          <span class="progress"><span style="width: ${session.execution}%;"></span></span>
+          <span class="muted">标准执行度 ${session.execution}% · 最弱步骤：${session.weak}</span>
+        </button>
+      `).join("");
+
+      sessionList.querySelectorAll("[data-session]").forEach((button) => {
+        button.addEventListener("click", () => selectSession(Number(button.dataset.session)));
+      });
+    }
+
+    function selectSession(index) {
+      const session = sessions[index];
+      sessionList.querySelectorAll("[data-session]").forEach((button) => {
+        button.classList.toggle("active", Number(button.dataset.session) === index);
+      });
+      sessionDetailTitle.textContent = session.title;
+      sessionOwner.textContent = `执行人：${session.owner}`;
+      detailOwnerInput.value = session.owner;
+    }
+
+    function renderPrecheck() {
+      precheckList.innerHTML = precheckItems.map(([name, standard, status], index) => `
+        <div class="check-row">
+          <span class="check-mark">${status.includes("需") ? "!" : "✓"}</span>
+          <span>
+            <strong>${index + 1}. ${name}</strong>
+            <span class="muted">${standard}</span>
+          </span>
+          <span class="chip ${status.includes("需") ? "amber" : "green"}">${status}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderFlowStages() {
+      flowStages.innerHTML = flowSteps.map((group) => `
+        <article class="stage-card">
+          <div class="stage-title">
+            <h3>${group.stage}</h3>
+            <span class="chip blue">${group.steps.length}步</span>
+          </div>
+          <div class="checklist">
+            ${group.steps.map((step, index) => `
+              <div class="check-row">
+                <span class="check-mark">${index === group.steps.length - 1 && group.stage === "会后" ? "·" : "✓"}</span>
+                <span>
+                  <strong>${step}</strong>
+                  <span class="muted">${keyStandards.some(([name]) => step.includes(name) || name.includes(step)) ? "关键步骤" : "普通步骤"}</span>
+                </span>
+                <span class="chip ${keyStandards.some(([name]) => step.includes(name) || name.includes(step)) ? "green" : ""}">${keyStandards.some(([name]) => step.includes(name) || name.includes(step)) ? "重点" : "勾选"}</span>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderKeyStandards() {
+      keyStandardsEl.innerHTML = keyStandards.map(([name, sentence, deviation, action]) => `
+        <tr>
+          <td><strong>${name}</strong></td>
+          <td>${sentence}</td>
+          <td><span class="chip amber">部分符合</span></td>
+          <td>${deviation}</td>
+          <td>${action}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderExamples() {
+      examplesGrid.innerHTML = exampleData.map(([name, change, type, note, color]) => `
+        <article class="example-card">
+          <div class="standard-top">
+            <h3>${name}</h3>
+            <span class="chip ${color}">${type}</span>
+          </div>
+          <p>${change}</p>
+          <p><strong>记录：</strong>${note}</p>
+        </article>
+      `).join("");
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => switchTab(button.dataset.tab));
+    });
+
+    renderSessions();
+    renderPrecheck();
+    renderFlowStages();
+    renderKeyStandards();
+    renderExamples();
+  </script>
+</body>
+</html>
