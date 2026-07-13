@@ -412,6 +412,66 @@
       font-size: 12px;
     }
 
+    @media (max-width: 640px) {
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+      }
+
+      table {
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 8px;
+      }
+
+      tr {
+        display: grid;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      td {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
+        border-bottom: 1px solid var(--line);
+      }
+
+      td:last-child {
+        border-bottom: 0;
+      }
+
+      td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      td input,
+      td select {
+        width: 100%;
+        min-width: 0;
+      }
+
+      td .tag {
+        justify-self: start;
+        white-space: normal;
+      }
+    }
+
     .stage-title {
       display: flex;
       align-items: center;
@@ -995,12 +1055,12 @@
 
       document.getElementById("recentRecords").innerHTML = records.slice(0, 8).map((item) => `
         <tr>
-          <td>${formatDate(item.date)}</td>
-          <td>${item.theme || "未填"}</td>
-          <td>${item.owner || "未填"}</td>
-          <td>${item.count || "0"}</td>
-          <td><span class="tag warn">${item.weak || "未选"}</span></td>
-          <td>${item.next || "未填"}</td>
+          <td data-label="日期">${formatDate(item.date)}</td>
+          <td data-label="主题">${item.theme || "未填"}</td>
+          <td data-label="执行人">${item.owner || "未填"}</td>
+          <td data-label="人数">${item.count || "0"}</td>
+          <td data-label="弱项"><span class="tag warn">${item.weak || "未选"}</span></td>
+          <td data-label="下次动作">${item.next || "未填"}</td>
         </tr>
       `).join("");
     }
@@ -1056,15 +1116,15 @@
     function renderStandards() {
       document.getElementById("standardRows").innerHTML = keySteps.map((step) => `
         <tr>
-          <td><strong>${step}</strong></td>
-          <td>
+          <td data-label="关键步骤"><strong>${step}</strong></td>
+          <td data-label="判断">
             <select aria-label="${step}判断">
               <option>做到</option>
               <option selected>部分</option>
               <option>未做</option>
             </select>
           </td>
-          <td><input type="text" placeholder="下一场只改一个动作"></td>
+          <td data-label="下次动作"><input type="text" placeholder="下一场只改一个动作"></td>
         </tr>
       `).join("");
     }
@@ -1072,11 +1132,11 @@
     function renderCustomers() {
       document.getElementById("customerRows").innerHTML = customers.slice(0, 10).map((item) => `
         <tr>
-          <td>${item.name || "未填"}</td>
-          <td>${item.source || "未填"}</td>
-          <td>${item.problem || "未填"}</td>
-          <td>${item.change || "未填"}</td>
-          <td>${item.next || "未填"}</td>
+          <td data-label="姓名">${item.name || "未填"}</td>
+          <td data-label="来源">${item.source || "未填"}</td>
+          <td data-label="原问题">${item.problem || "未填"}</td>
+          <td data-label="变化">${item.change || "未填"}</td>
+          <td data-label="下一步">${item.next || "未填"}</td>
         </tr>
       `).join("");
     }
